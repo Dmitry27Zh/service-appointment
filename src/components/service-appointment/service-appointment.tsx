@@ -54,6 +54,10 @@ function ServiceAppointment(): JSX.Element {
   const renderPlaces = () => {
     const category = data.category
 
+    if (category && !places) {
+      return 'loading'
+    }
+
     if (places && category) {
       const placesToRender = places.filter(({ available_car_category }) => {
         return available_car_category.some((inspectionPrice) => {
@@ -68,10 +72,26 @@ function ServiceAppointment(): JSX.Element {
       return <Select options={options} name="place" value={data.place} onChange={onChange} />
     }
   }
+  const renderPrice = () => {
+    if (places && data.place) {
+      const place = places.find((place) => place.id === Number(data.place?.value))
+
+      const price = place?.available_car_category.find(
+        (availableCategory) => availableCategory.car_category_id === Number(data.category?.value)
+      )?.price
+
+      return (
+        <p>
+          Стоимость услуг составит: <b>${price}</b>
+        </p>
+      )
+    }
+  }
 
   return (
     <div className="container">
       <h2 className="mb-5 pt-4 pb-4">Service appointment</h2>
+      {renderPrice()}
       <div className="row mb-3">
         <div className="col">{renderCategories()}</div>
         <div className="col">{renderPlaces()}</div>
