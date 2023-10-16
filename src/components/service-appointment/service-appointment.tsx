@@ -1,10 +1,26 @@
+import { useEffect, useState } from 'react'
 import Select from 'react-select'
+import { CategoriesList } from '../../types/api'
+import api from '../../API/api'
 
 function ServiceAppointment(): JSX.Element {
-  const renderCategories = () => {
-    const options: any[] = []
+  const [categories, setCategories] = useState<CategoriesList | null>(null)
 
-    return <Select options={options} name="category" />
+  useEffect(() => {
+    api.getCarCategoriesList().then((data) => {
+      setCategories(data)
+    })
+  }, [])
+
+  const renderCategories = () => {
+    if (categories) {
+      const options = categories.map((category) => ({
+        value: category.id,
+        label: category.description,
+      }))
+
+      return <Select options={options} name="category" />
+    }
   }
 
   return (
@@ -12,11 +28,11 @@ function ServiceAppointment(): JSX.Element {
       <h2 className="mb-5 pt-4 pb-4">Service appointment</h2>
       <div className="row mb-3">
         <div className="col">{renderCategories()}</div>
-        <div className="col">{renderCategories()}</div>
+        <div className="col"></div>
       </div>
       <div className="row">
-        <div className="col">{renderCategories()}</div>
-        <div className="col">{renderCategories()}</div>
+        <div className="col"></div>
+        <div className="col"></div>
       </div>
     </div>
   )
