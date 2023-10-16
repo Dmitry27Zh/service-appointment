@@ -1,15 +1,18 @@
 import { useEffect, useMemo, useState } from 'react'
 import Select, { ActionMeta } from 'react-select'
-import { CategoriesList, PlacesList, SelectOption, ServiceAppointmentData } from '../../types/api'
+import { CategoriesList, PlacesList, Schedule, SelectOption, ServiceAppointmentData } from '../../types/api'
 import api from '../../API/api'
 
 function ServiceAppointment(): JSX.Element {
   const [categories, setCategories] = useState<CategoriesList | null>(null)
   const [places, setPlaces] = useState<PlacesList | null>(null)
+  const [schedule, setSchedule] = useState<Schedule | null>(null)
   const initialData: ServiceAppointmentData = useMemo(
     () => ({
       category: null,
       place: null,
+      day: null,
+      time: null,
     }),
     []
   )
@@ -30,6 +33,13 @@ function ServiceAppointment(): JSX.Element {
   useEffect(() => {
     setData((prevState) => ({ ...initialData, category: prevState.category }))
   }, [data.category, initialData])
+  useEffect(() => {
+    if (data.place) {
+      api.getSchedule().then((data) => setSchedule(data))
+    } else {
+      setSchedule(null)
+    }
+  }, [data.place])
 
   const onChange = (option: SelectOption, meta: ActionMeta<SelectOption>) => {
     const name = meta.name
@@ -87,6 +97,16 @@ function ServiceAppointment(): JSX.Element {
       )
     }
   }
+  const renderScheduleDay = () => {
+    if (schedule) {
+      const options = schedule.days.map((day) => ({
+        value: day,
+        label: day,
+      }))
+
+      return <Select options={options} name="day" value={data.day} onChange={onChange} />
+    }
+  }
 
   return (
     <div className="container">
@@ -97,7 +117,7 @@ function ServiceAppointment(): JSX.Element {
         <div className="col">{renderPlaces()}</div>
       </div>
       <div className="row">
-        <div className="col"></div>
+        <div className="col">{renderScheduleDay()}</div>
         <div className="col"></div>
       </div>
     </div>

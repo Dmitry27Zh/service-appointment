@@ -10,7 +10,10 @@ export type CategoriesList = Awaited<APICategories>
 type APIPlaces = ReturnType<typeof api.getPlacesList>
 export type PlacesList = Awaited<APIPlaces>
 
-type ServiceAppointmentDataName = 'category' | 'place'
+type APIShedule = ReturnType<typeof api.getSchedule>
+export type Schedule = Awaited<APIShedule>
+
+type ServiceAppointmentDataName = 'category' | 'place' | 'day' | 'time'
 
 export type SelectOption = {
   value: string
