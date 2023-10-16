@@ -42,6 +42,9 @@ function ServiceAppointment(): JSX.Element {
       setSchedule(null)
     }
   }, [data.place, initialData])
+  useEffect(() => {
+    setData((prevState) => ({ ...prevState, time: null }))
+  }, [data.day])
 
   const onChange = (option: SelectOption, meta: ActionMeta<SelectOption>) => {
     const name = meta.name
@@ -113,6 +116,23 @@ function ServiceAppointment(): JSX.Element {
       return <Select options={options} name="day" value={data.day} onChange={onChange} />
     }
   }
+  const renderScheduleTime = () => {
+    const chosenDay = data.day
+
+    if (chosenDay && schedule) {
+      const day = schedule.days.find((day) => day === chosenDay.value)
+
+      if (day) {
+        const times = schedule.times[day]
+        const options = times?.map((time) => ({
+          value: time,
+          label: time,
+        }))
+
+        return <Select options={options} name="time" value={data.time} onChange={onChange} />
+      }
+    }
+  }
 
   return (
     <div className="container">
@@ -124,7 +144,7 @@ function ServiceAppointment(): JSX.Element {
       </div>
       <div className="row">
         <div className="col">{renderScheduleDay()}</div>
-        <div className="col"></div>
+        <div className="col">{renderScheduleTime()}</div>
       </div>
     </div>
   )
