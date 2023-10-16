@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Select, { ActionMeta } from 'react-select'
 import { CategoriesList, PlacesList, SelectOption, ServiceAppointmentData } from '../../types/api'
 import api from '../../API/api'
@@ -6,10 +6,13 @@ import api from '../../API/api'
 function ServiceAppointment(): JSX.Element {
   const [categories, setCategories] = useState<CategoriesList | null>(null)
   const [places, setPlaces] = useState<PlacesList | null>(null)
-  const initialData: ServiceAppointmentData = {
-    category: null,
-    place: null,
-  }
+  const initialData: ServiceAppointmentData = useMemo(
+    () => ({
+      category: null,
+      place: null,
+    }),
+    []
+  )
   const [data, setData] = useState(initialData)
 
   useEffect(() => {
@@ -24,6 +27,9 @@ function ServiceAppointment(): JSX.Element {
         setPlaces(data)
       })
   }, [])
+  useEffect(() => {
+    setData((prevState) => ({ ...initialData, category: prevState.category }))
+  }, [data.category, initialData])
 
   const onChange = (option: SelectOption, meta: ActionMeta<SelectOption>) => {
     const name = meta.name
@@ -46,8 +52,15 @@ function ServiceAppointment(): JSX.Element {
     }
   }
   const renderPlaces = () => {
-    if (places) {
-      const options = places.map((place) => ({
+    const category = data.category
+
+    if (places && category) {
+      const placesToRender = places.filter(({ available_car_category }) => {
+        return available_car_category.some((inspectionPrice) => {
+          return inspectionPrice.car_category_id === Number(category.value)
+        })
+      })
+      const options = placesToRender.map((place) => ({
         value: String(place.id),
         label: `${place.title} – ${place.address}`,
       }))
