@@ -37,7 +37,8 @@ function ServiceAppointment(): JSX.Element {
     setData((prevState) => ({ ...initialData, category: prevState.category, place: data.place }))
 
     if (data.place) {
-      api.getSchedule().then((data) => setSchedule(data))
+      const id = Number(data.place.value)
+      api.getSchedule(id).then((data) => setSchedule(data))
     } else {
       setSchedule(null)
     }

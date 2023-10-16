@@ -23,3 +23,11 @@ export type SelectOption = {
 export type ServiceAppointmentData = {
   [K in ServiceAppointmentDataName]: SelectOption
 }
+
+export type Request = {
+  method: Method
+  url: string
+  success: any
+  params?: object
+}
+export type RequestSettings<T extends Request> = Omit<T, 'success'>
