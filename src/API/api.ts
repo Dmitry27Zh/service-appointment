@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { GetCarCategoriesList } from './data/requests'
+import { GetCarCategoriesList, GetPlacesList } from './data/requests'
 import { Method } from '../types/api'
 
 const getData = async (settings: { method: Method; url: string }) => {
@@ -19,8 +19,20 @@ async function getCarCategoriesList() {
   return data
 }
 
+async function getPlacesList() {
+  const settings: Omit<GetPlacesList, 'success'> = {
+    method: 'GET',
+    url: 'http://faceprog.ru/tsapi/places/',
+  }
+  type Data = GetPlacesList['success']
+  const data: Data = await getData(settings)
+
+  return data
+}
+
 const api = {
   getCarCategoriesList,
+  getPlacesList,
 }
 
 export default api

@@ -1,15 +1,23 @@
 import { useEffect, useState } from 'react'
 import Select from 'react-select'
-import { CategoriesList } from '../../types/api'
+import { CategoriesList, PlacesList } from '../../types/api'
 import api from '../../API/api'
 
 function ServiceAppointment(): JSX.Element {
   const [categories, setCategories] = useState<CategoriesList | null>(null)
+  const [places, setPlaces] = useState<PlacesList | null>(null)
 
   useEffect(() => {
-    api.getCarCategoriesList().then((data) => {
-      setCategories(data)
-    })
+    api
+      .getCarCategoriesList()
+      .then((data) => {
+        setCategories(data)
+
+        return api.getPlacesList()
+      })
+      .then((data) => {
+        setPlaces(data)
+      })
   }, [])
 
   const renderCategories = () => {
@@ -20,6 +28,18 @@ function ServiceAppointment(): JSX.Element {
       }))
 
       return <Select options={options} name="category" />
+    } else {
+      return 'loading...'
+    }
+  }
+  const renderPlaces = () => {
+    if (places) {
+      const options = places.map((place) => ({
+        value: place.id,
+        label: `${place.title} – ${place.address}`,
+      }))
+
+      return <Select options={options} name="place" />
     }
   }
 
@@ -28,7 +48,7 @@ function ServiceAppointment(): JSX.Element {
       <h2 className="mb-5 pt-4 pb-4">Service appointment</h2>
       <div className="row mb-3">
         <div className="col">{renderCategories()}</div>
-        <div className="col"></div>
+        <div className="col">{renderPlaces()}</div>
       </div>
       <div className="row">
         <div className="col"></div>
