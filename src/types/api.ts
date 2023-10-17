@@ -1,4 +1,5 @@
 import api from '../API/api'
+import { BASE_URL } from '../constants'
 
 export type Method = 'get' | 'post' | 'GET' | 'POST'
 
@@ -30,4 +31,10 @@ export type Request = {
   success: any
   params?: object
 }
-export type RequestSettings<T extends Request> = Omit<T, 'success'>
+
+export type BaseUrl = typeof BASE_URL
+export type StringAfter<T extends string, U extends string> = U extends `${T}${infer R}` ? R : never
+
+export type RequestSettings<T extends Request> = Omit<T, 'success' | 'url'> & {
+  url: StringAfter<BaseUrl, T['url']>
+}
