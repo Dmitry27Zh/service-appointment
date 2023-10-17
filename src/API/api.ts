@@ -2,6 +2,7 @@ import axios from 'axios'
 import { GetCarCategoriesList, GetPlacesList, GetSchedule } from './data/requests'
 import { RequestSettings, Request } from '../types/api'
 import { BASE_URL } from '../constants'
+import { data as mockData } from './mock/data'
 
 const http = axios.create({
   baseURL: BASE_URL,
@@ -9,9 +10,21 @@ const http = axios.create({
 })
 
 const getData = async <T extends Request>(settings: RequestSettings<T>): Promise<T['success']> => {
-  const request = await http(settings)
+  try {
+    const request = await http(settings)
 
-  return request.data
+    if (request.statusText === 'OK') {
+      return request.data
+    } else {
+      throw new Error()
+    }
+  } catch (e) {
+    const dataName = settings.url.match(/\/([^/]*)\/$/)?.[1]
+
+    if (dataName && dataName in mockData) {
+      return mockData[dataName]
+    }
+  }
 }
 
 async function getCarCategoriesList() {
